@@ -12,10 +12,13 @@ export default function TipCalculator() {
 
   const billAmount = parseFloat(bill) || 0;
   const tipPercent = isCustomTip ? parseFloat(customTip) : parseFloat(tipPercentage);
-  const peopleCount = parseInt(people) || 1;
+  const peopleCount = parseInt(people) || 0;
   
-  const tipAmount = (billAmount * (tipPercent / 100)) / peopleCount;
-  const totalPerPerson = (billAmount + (billAmount * (tipPercent / 100))) / peopleCount;
+  // Validation: people count must be greater than 0
+  const isValidPeopleCount = peopleCount > 0;
+  
+  const tipAmount = isValidPeopleCount ? (billAmount * (tipPercent / 100)) / peopleCount : 0;
+  const totalPerPerson = isValidPeopleCount ? (billAmount + (billAmount * (tipPercent / 100))) / peopleCount : 0;
 
   const handleTipSelect = (percentage: string) => {
     setTipPercentage(percentage);
@@ -104,9 +107,14 @@ export default function TipCalculator() {
 
               {/* Number of People */}
               <div>
-                <label className="block text-neutral-500 text-sm mb-2">
-                  Number of People
-                </label>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="block text-neutral-500 text-sm">
+                    Number of People
+                  </label>
+                  {people && !isValidPeopleCount && (
+                    <span className="text-red-500 text-sm">Can't be zero</span>
+                  )}
+                </div>
                 <div className="relative">
                   <Image
                     src="/images/icon-person.svg"
@@ -120,7 +128,11 @@ export default function TipCalculator() {
                     value={people}
                     onChange={(e) => setPeople(e.target.value)}
                     placeholder="0"
-                    className="w-full bg-neutral-50 text-neutral-900 text-right text-2xl font-bold py-3 px-4 pl-12 rounded-lg border-2 border-transparent focus:border-primary focus:outline-none"
+                    className={`w-full text-right text-2xl font-bold py-3 px-4 pl-12 rounded-lg border-2 focus:outline-none ${
+                      people && !isValidPeopleCount
+                        ? "bg-red-50 text-red-500 border-red-500"
+                        : "bg-neutral-50 text-neutral-900 border-transparent focus:border-primary"
+                    }`}
                   />
                 </div>
               </div>
