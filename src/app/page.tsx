@@ -2,6 +2,14 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { 
+  calculateTipAmounts, 
+  createTipCalculatorHandlers, 
+  TIP_PERCENTAGES, 
+  CURRENCY_SYMBOL, 
+  DECIMAL_PLACES,
+  getPeopleCountErrorMessage 
+} from "../logic";
 
 export default function TipCalculator() {
   const [bill, setBill] = useState("");
@@ -10,35 +18,20 @@ export default function TipCalculator() {
   const [people, setPeople] = useState("");
   const [isCustomTip, setIsCustomTip] = useState(false);
 
-  const billAmount = parseFloat(bill) || 0;
-  const tipPercent = isCustomTip ? parseFloat(customTip) : parseFloat(tipPercentage);
-  const peopleCount = parseInt(people) || 0;
-  
-  // Validation: people count must be greater than 0
-  const isValidPeopleCount = peopleCount > 0;
-  
-  const tipAmount = isValidPeopleCount ? (billAmount * (tipPercent / 100)) / peopleCount : 0;
-  const totalPerPerson = isValidPeopleCount ? (billAmount + (billAmount * (tipPercent / 100))) / peopleCount : 0;
+  // Calculate tip amounts using extracted logic
+  const { tipAmount, totalPerPerson, isValidPeopleCount } = calculateTipAmounts({
+    bill,
+    tipPercentage,
+    customTip,
+    people,
+    isCustomTip
+  });
 
-  const handleTipSelect = (percentage: string) => {
-    setTipPercentage(percentage);
-    setIsCustomTip(false);
-    setCustomTip("");
-  };
-
-  const handleCustomTipChange = (value: string) => {
-    setCustomTip(value);
-    setIsCustomTip(true);
-    setTipPercentage("");
-  };
-
-  const handleReset = () => {
-    setBill("");
-    setTipPercentage("");
-    setCustomTip("");
-    setPeople("");
-    setIsCustomTip(false);
-  };
+  // Create handlers using extracted logic
+  const handlers = createTipCalculatorHandlers(
+    { bill, tipPercentage, customTip, people, isCustomTip },
+    { setBill, setTipPercentage, setCustomTip, setPeople, setIsCustomTip }
+  );
 
   return (
     <div className="min-h-screen bg-neutral-200 flex items-center justify-center p-4">
@@ -69,7 +62,7 @@ export default function TipCalculator() {
                   <input
                     type="number"
                     value={bill}
-                    onChange={(e) => setBill(e.target.value)}
+                    onChange={(e) => handlers.setBill(e.target.value)}
                     placeholder="0"
                     className="w-full bg-neutral-50 text-neutral-900 text-right text-2xl font-bold py-3 px-4 pl-12 rounded-lg border-2 border-transparent focus:border-primary focus:outline-none"
                   />
@@ -82,10 +75,10 @@ export default function TipCalculator() {
                   Select Tip %
                 </label>
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-                  {["5", "10", "15", "25", "50"].map((percentage) => (
+                  {TIP_PERCENTAGES.map((percentage) => (
                     <button
                       key={percentage}
-                      onClick={() => handleTipSelect(percentage)}
+                      onClick={() => handlers.handleTipSelect(percentage)}
                       className={`py-3 px-6 rounded-lg text-xl font-bold transition-colors ${
                         tipPercentage === percentage && !isCustomTip
                           ? "bg-primary text-neutral-900"
@@ -98,7 +91,7 @@ export default function TipCalculator() {
                   <input
                     type="number"
                     value={customTip}
-                    onChange={(e) => handleCustomTipChange(e.target.value)}
+                    onChange={(e) => handlers.handleCustomTipChange(e.target.value)}
                     placeholder="Custom"
                     className="py-3 px-6 rounded-lg text-xl font-bold text-center bg-neutral-50 text-neutral-900 border-2 border-transparent focus:border-primary focus:outline-none"
                   />
@@ -111,8 +104,8 @@ export default function TipCalculator() {
                   <label className="block text-neutral-500 text-sm">
                     Number of People
                   </label>
-                  {people && !isValidPeopleCount && (
-                    <span className="text-red-500 text-sm">Can't be zero</span>
+                  {getPeopleCountErrorMessage(people) && (
+                    <span className="text-red-500 text-sm">{getPeopleCountErrorMessage(people)}</span>
                   )}
                 </div>
                 <div className="relative">
@@ -126,7 +119,7 @@ export default function TipCalculator() {
                   <input
                     type="number"
                     value={people}
-                    onChange={(e) => setPeople(e.target.value)}
+                    onChange={(e) => handlers.setPeople(e.target.value)}
                     placeholder="0"
                     className={`w-full text-right text-2xl font-bold py-3 px-4 pl-12 rounded-lg border-2 focus:outline-none ${
                       people && !isValidPeopleCount
@@ -147,7 +140,7 @@ export default function TipCalculator() {
                     <div className="text-neutral-400 text-xs">/ person</div>
                   </div>
                   <div className="text-3xl lg:text-4xl font-bold text-primary">
-                    ${tipAmount.toFixed(2)}
+                    {CURRENCY_SYMBOL}{tipAmount.toFixed(DECIMAL_PLACES)}
                   </div>
                 </div>
                 
@@ -157,13 +150,13 @@ export default function TipCalculator() {
                     <div className="text-neutral-400 text-xs">/ person</div>
                   </div>
                   <div className="text-3xl lg:text-4xl font-bold text-primary">
-                    ${totalPerPerson.toFixed(2)}
+                    {CURRENCY_SYMBOL}{totalPerPerson.toFixed(DECIMAL_PLACES)}
                   </div>
                 </div>
               </div>
               
               <button
-                onClick={handleReset}
+                onClick={handlers.handleReset}
                 className="w-full bg-primary text-neutral-900 py-3 px-6 rounded-lg text-xl font-bold hover:bg-neutral-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={!bill && !tipPercentage && !customTip && !people}
               >
