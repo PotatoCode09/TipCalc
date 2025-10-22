@@ -1,4 +1,4 @@
-import { InputField } from "../ui";
+import { InputField } from "@/app/components/ui";
 
 interface BillInputProps {
   value: string;

@@ -1,4 +1,4 @@
-import { ResultsDisplay } from "./sections";
+import ResultsDisplay from "./ResultsDisplay";
 
 interface CalculatorResultsProps {
   tipAmount: number;

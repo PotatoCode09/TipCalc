@@ -4,8 +4,8 @@ import { useState } from "react";
 import { 
   calculateTipAmounts, 
   createTipCalculatorHandlers 
-} from "../logic";
-import { CalculatorInputs, CalculatorResults } from "./components";
+} from "@/logic";
+import { CalculatorInputs, CalculatorResults } from "@/app/components";
 
 export default function TipCalculator() {
   const [bill, setBill] = useState("");

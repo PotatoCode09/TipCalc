@@ -1,5 +1,5 @@
-import { InputField } from "../ui";
-import { getPeopleCountErrorMessage } from "../../../logic";
+import { InputField } from "@/app/components/ui";
+import { getPeopleCountErrorMessage } from "@/logic";
 
 interface PeopleInputProps {
   value: string;

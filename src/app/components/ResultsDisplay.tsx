@@ -1,5 +1,5 @@
-import { ResultDisplay } from "../ui";
-import { CURRENCY_SYMBOL, DECIMAL_PLACES } from "../../../logic";
+import { ResultDisplay } from "@/app/components/ui";
+import { CURRENCY_SYMBOL, DECIMAL_PLACES } from "@/logic";
 
 interface ResultsDisplayProps {
   tipAmount: number;

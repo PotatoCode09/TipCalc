@@ -1,4 +1,6 @@
-import { BillInput, PeopleInput, TipSelection } from "./sections";
+import BillInput from "./BillInput";
+import PeopleInput from "./PeopleInput";
+import TipSelection from "./TipSelection";
 
 interface CalculatorInputsProps {
   // Bill state

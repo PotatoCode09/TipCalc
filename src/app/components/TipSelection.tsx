@@ -1,5 +1,5 @@
-import { TipButton, InputField } from "../ui";
-import { TIP_PERCENTAGES } from "../../../logic";
+import { TipButton, InputField } from "@/app/components/ui";
+import { TIP_PERCENTAGES } from "@/logic";
 
 interface TipSelectionProps {
   selectedTip: string;
